@@ -38,8 +38,6 @@ class EnrollSubCourseOutputSerializer(serializers.ModelSerializer):
         fields=['title','subcourse_lesson',]
 
 
-
-
 class EnrolledCourseDetailOutputSerializer(BaseCourseSerializers):
     category=CategorySerializer(read_only=True)
     progress=None
@@ -51,7 +49,6 @@ class EnrolledCourseDetailOutputSerializer(BaseCourseSerializers):
 
 
 class EnrolledCourseOutputSerializer(BaseCourseSerializers):
-    
     class Meta:
         model=Course
         fields=['id','title','image','progress']

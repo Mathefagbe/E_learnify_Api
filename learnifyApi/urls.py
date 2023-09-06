@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/', include('courses.urls')),
     path('api/',include('my_subscription.urls')),
     path('api/',include('payment.urls')),
+    path('api/',include('notification.urls')),
 ]
 if settings.DEBUG:
     urlpatterns +=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

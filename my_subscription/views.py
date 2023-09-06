@@ -10,6 +10,7 @@ from courses.models import Lesson
 from rest_framework import status
 from django.db import transaction
 from rest_framework.exceptions import NotFound,ValidationError
+from .services import enroll_to_course
 
 
 # Create your views here.
@@ -25,6 +26,18 @@ class MyLearningApiView(APIView):
         except Exception as e:
             raise ValidationError(error_handler(e))
         return Response(serializer.data)
+    
+
+class EnrollApiView(APIView):
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[BasicAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            data=enroll_to_course(course_id=self.kwargs['id'],user=self.request.user)
+        except Exception as e:
+            raise ValidationError(error_handler(e))
+        return Response(data)
 
 
 
@@ -33,7 +46,6 @@ class AutoAddLessonCompleteApiView(CreateAPIView):
     authentication_classes=[JWTAuthentication]
     lookup_field='id'
 
-
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -41,12 +53,14 @@ class AutoAddLessonCompleteApiView(CreateAPIView):
             if get_lesson.is_completed.filter(id=self.request.user.id).exists():
                 get_lesson.is_completed.remove(self.request.user)
                 context={
-                    'status':"not completed"
+                    'message':"not completed",
+                    "status":False
                 }
             else:
                 get_lesson.is_completed.add(self.request.user)
                 context={
-                    'status':"completed"
+                    'message':"completed",
+                    "status":True
                 }
         except Exception as e:
             raise NotFound(error_handler(e))

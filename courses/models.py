@@ -25,7 +25,7 @@ class Course(models.Model):
         Free="Free","Free"
     id=models.UUIDField(default=uuid.uuid4,primary_key=True,editable=False,db_index=True)
     title=models.CharField(_("Title"),max_length=300,blank=False,null=False)
-    author=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    author=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name='course_author')
     category=models.ForeignKey(Category,on_delete=models.PROTECT)
     image=models.ImageField(upload_to='Course_img/%Y/%M',blank=False)
     price=models.DecimalField(_("Price"),max_digits=99999999,decimal_places=0,blank=True,null=True)

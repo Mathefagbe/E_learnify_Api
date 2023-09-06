@@ -3,7 +3,8 @@ from courses.models import Course
 from rest_framework.exceptions import NotFound
 from utils.error_handler import error_handler
 from django.contrib.auth import get_user_model
-from courses.models import Course
+from my_subscription.services import enroll_to_course
+
 
 User=get_user_model()
 
@@ -28,7 +29,7 @@ class Transactions(object):
             gateway_response=transaction_data['gateway_response']
         )
         # course_id=transaction_data['metadata']['course_id']
-        return self.enroll_to_course(course_id,user)
+        return enroll_to_course(course_id,user)
 
     def _create_customer_object(self,customer_data, authorization_data):
         user=self._get_user_by_email(email=customer_data["email"])
@@ -58,14 +59,14 @@ class Transactions(object):
        return self._create_transaction_object(transaction_data,user)
 
     
-    @staticmethod
-    def enroll_to_course(course_id,user):
-        try:
-            get_course=Course.objects.get(id=course_id)
-            get_course.subscribers.add(user)
-            context={
-                'status':f'congratulations You Have successfully Enrolled For {get_course.title}'
-            }
-        except Exception as e:
-            raise NotFound(error_handler(e))
-        return context
+    # @staticmethod
+    # def enroll_to_course(course_id,user):
+    #     try:
+    #         get_course=Course.objects.get(id=course_id)
+    #         get_course.subscribers.add(user)
+    #         context={
+    #             'status':f'congratulations You Have successfully Enrolled For {get_course.title}'
+    #         }
+    #     except Exception as e:
+    #         raise NotFound(error_handler(e))
+    #     return context

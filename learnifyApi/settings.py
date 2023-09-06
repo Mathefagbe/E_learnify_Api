@@ -15,6 +15,7 @@ from datetime import timedelta
 from django.conf import settings
 import os
 from decouple import config
+from firebase_admin import initialize_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
      'django_filters',
      'sslserver',
      "corsheaders",
+     "fcm_django",
     #  'paystack',
 
     # local apps
@@ -57,7 +59,8 @@ INSTALLED_APPS = [
     'courses',
     'user_profile',
     'my_subscription',
-    'payment'
+    'payment',
+    'notification'
 ]
 
 MIDDLEWARE = [
@@ -287,3 +290,12 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
+
+
+FIREBASE_APP=initialize_app()
+
+FCM_DJANG0_SETTINGS={
+    "DEFAULT_FIREBASE_APP":None,
+    "ONE_DEVICE_PER_USER":False,
+    "DELETE_INACTIVE_DEVICES":False
+}

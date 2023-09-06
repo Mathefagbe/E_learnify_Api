@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from .serializers import InputSerializer
+from .serializers import InputSerializer,TransactionOrderSerializer
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,6 +8,9 @@ from .transaction import Transactions
 from .services import PaymentServices
 from rest_framework.generics import CreateAPIView
 from .services import WebhookService
+from .models import TransactionLog
+from rest_framework.exceptions import NotFound
+from utils.error_handler import error_handler
 
 
 class InitailizesTrasactionApiView(CreateAPIView):
@@ -28,7 +31,6 @@ class VerifyTransactionApiView(APIView):
     permission_classes=[IsAuthenticated]
     authentication_classes=[BasicAuthentication]
     
-   
     def get(self, request, *args, **kwargs):
         user=self.request.user
         data=PaymentServices().verify_transaction(self.kwargs['pk'])
@@ -49,3 +51,15 @@ class WebhookHookView(APIView):
         context=webhook_service.webhook_handler()
         return Response(context,status=status.HTTP_200_OK)
 
+
+class TransactionOrderApiView(APIView):
+    authentication_classes=[BasicAuthentication]
+    permission_classes=[IsAuthenticated]
+
+    def get(self,request,*args,**kwargs):
+        try:
+            get_user_order=TransactionLog.objects.select_related("course","user").filter(user=self.request.user).all()
+            order=TransactionOrderSerializer(get_user_order,many=True)
+        except Exception as e:
+            raise NotFound(error_handler(e))
+        return Response(order.data,status=status.HTTP_200_OK)

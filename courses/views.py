@@ -1,7 +1,6 @@
 from django.shortcuts import render,get_object_or_404
 from .serializers import (CourseDetailOutputSerializer,CourseInputSerializer,ReviewSerializer,LessonOutputSerializer,
                           CategorySerializer,CourseOutputSerializer,SubCourseOutputSerializer,AboutCourseSerializer)
-
 from rest_framework.generics import (ListAPIView,CreateAPIView,RetrieveAPIView)
 from .models import Course,Review,Category,SubCourse,AboutCourse
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -69,7 +68,7 @@ class AboutCourseApiView(RetrieveAPIView):
 
 class CoursesDetailApiView(APIView):
     permission_classes=[IsAuthenticated]
-    authentication_classes=[JWTAuthentication]
+    authentication_classes=[BasicAuthentication]
     lookup_field='id'
 
 
@@ -78,9 +77,8 @@ class CoursesDetailApiView(APIView):
             obj=Course.objects.select_related('author',"category",).\
                 prefetch_related('lessons','reviews').get(id=self.kwargs[self.lookup_field])
             self.check_object_permissions(self.request, obj)
-            if obj.id in self.request.user.enroll_courses.values_list('id',flat=True).all():
+            if self.request.user.enroll_courses.filter(id__in=[obj.id]).exists():
                 serializer=EnrolledCourseDetailOutputSerializer(obj,many=False)
-
             else:
                serializer=CourseDetailOutputSerializer(obj,many=False)
         except Exception as e:
@@ -103,7 +101,7 @@ class CatgoryCoursesApiView(ListAPIView):
             category__id=self.kwargs[self.lookup_field]
         ).all()
 
-from .filters import CardTokenValidation
+
 # apps views
 class CreateReviewApiView(CreateAPIView):
     serializer_class=ReviewSerializer
@@ -142,9 +140,8 @@ class SubCourseApiView(APIView):
             obj=SubCourse.objects.select_related('course','course__author',).\
                 prefetch_related('subcourse_lesson',).get(course__id=self.kwargs[self.lookup_field])
             self.check_object_permissions(self.request, obj)
-            if obj.course.id in self.request.user.enroll_courses.values_list('id',flat=True).all():
+            if self.request.user.enroll_courses.filter(id__in=[obj.course.id]).exists():
                 serializer=EnrollSubCourseOutputSerializer(obj,many=False)
-
             else:
                serializer=SubCourseOutputSerializer(obj,many=False)
         except Exception as e:

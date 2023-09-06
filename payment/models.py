@@ -38,3 +38,13 @@ class TransactionLog(models.Model):
 
     def __str__(self):
         return f"{self.user} - checkout_id: {self.txRef}"
+    
+
+# class Orders(models.Model):
+#     id = models.UUIDField(unique=True, default=uuid.uuid4,primary_key=True)
+#     course=models.ForeignKey(Course,on_delete=models.SET_NULL, null=True,editable=False)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL ,on_delete=models.SET_NULL, null=True)
+#     amount = models.FloatField(max_length=19)
+#     status = models.CharField(max_length=50, null=True, blank=True)
+#     gateway_response=models.CharField(max_length=50, null=True, blank=True)
+#     transactionComplete = models.BooleanField(default=False)
