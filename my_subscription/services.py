@@ -1,6 +1,7 @@
 from courses.models import Course
 from rest_framework.exceptions import NotFound
 from utils.error_handler import error_handler
+from firebase_admin import initialize_app
 
 
 @staticmethod

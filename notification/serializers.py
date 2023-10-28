@@ -1,17 +1,11 @@
 from rest_framework import serializers
 from fcm_django.models import FCMDevice
+from .models import Notification
 
-class TokenSerializer(serializers.ModelSerializer):
-    token=serializers.CharField(source="registration_id")
 
-    
+class NotificationSerializer(serializers.ModelSerializer):
+    owner=serializers.CharField(source="owner.email")
     class Meta:
-        model=FCMDevice
-        fields=["token"]
+        model=Notification
+        exclude=['id']
 
-
-    def update(self, instance, validated_data):
-        token=validated_data.get('token',None)
-        instance.token=token
-        instance.save()
-        return instance

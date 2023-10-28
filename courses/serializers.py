@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from .models import Course
 from account.serializers import UserOutputSerializer
-from .models import Lesson,Category,Review,SubCourse,AboutCourse
+from .models import Lesson,Category,Review,SubCourse,AboutCourse,Requirement
 from django.utils.timesince import timesince
 from utils.base_serializers import BaseCourseSerializers
-import datetime
-
+from user_profile.serializers import InstructorSerializer
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,16 +29,19 @@ class SubCourseOutputSerializer(serializers.ModelSerializer):
 
 
 class CourseOutputSerializer(BaseCourseSerializers):
-    discount_price=serializers.DecimalField(source='discounted_price',max_digits=99999999,decimal_places=0)
+    discount_price=serializers.DecimalField(source='discounted_price',max_digits=10,decimal_places=0)
     class Meta:
         model=Course
         fields=['id','title','total_duration','total_lesson',
                 'price','discount_price','average_rating',]
+        
+        read_only=fields
 
 
 class CourseDetailOutputSerializer(BaseCourseSerializers):
-    category=CategorySerializer(read_only=True)
-    discount_price=serializers.DecimalField(source='discounted_price',max_digits=99999999,decimal_places=0)
+    # category=CategorySerializer(read_only=True)
+    category=serializers.CharField(source='category.title')
+    discount_price=serializers.DecimalField(source='discounted_price',max_digits=10,decimal_places=0)
     author=None
     progress=None
     total_duration=None
@@ -49,12 +51,9 @@ class CourseDetailOutputSerializer(BaseCourseSerializers):
         exclude=['subscribers','author','discount','date_created','date_updated']
 
 
-class CourseInputSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model=Course
-        fields=['title','category','image',"price",'discount','author']
-        
+
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     user=UserOutputSerializer(read_only=True)
@@ -71,27 +70,32 @@ class ReviewSerializer(serializers.ModelSerializer):
        timeAgo=timesince(obj.date_created)
        formatedTime=timeAgo.split(',')[0]
        return  f"{formatedTime} ago"
+    
 
+class RequirementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Requirement
+        exclude=["id",'about_course']
 
 class AboutCourseSerializer(serializers.ModelSerializer):
     date_created=serializers.DateTimeField(source='course.date_created')
     total_lesson=serializers.SerializerMethodField()
     total_duration=serializers.SerializerMethodField()
-    author=UserOutputSerializer(read_only=True,source='course.author')
+    author=InstructorSerializer(read_only=True,source='course.author.instructor_profile')
     level=serializers.CharField(read_only=True,source='course.level')
+    requirements=serializers.StringRelatedField(many=True)
+
     class Meta:
         model=AboutCourse
-        fields=['author','description','requirement','date_created',
-                'total_lesson','total_duration','level']
+        fields=['author','description','date_created',
+                'total_lesson','total_duration','level','requirements']
 
 
     def get_total_lesson(self,obj):
        return f"{obj.course.lessons.count()} Lessons"
     
+    
     def get_total_duration(self,obj):
-        duration_list=[]
-        for course_length in obj.course.lessons.all():
-                duration_list.append(course_length.duration.seconds)
-        total_seconds=sum(duration_list)
-        hour,minute,second=str(datetime.timedelta(seconds=total_seconds)).split(":")
-        return f"{int(minute)} mins" if int(hour)==0 else f"{int(hour)} hrs {int(minute)} mins"
+        if obj.total_duration is not None:
+            hour,minute,second=str(obj.total_duration).split(":")
+            return f"{int(minute)} mins" if int(hour)==0 else f"{int(hour)} hrs {int(minute)} mins"

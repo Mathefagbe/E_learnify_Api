@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category,Course,Lesson,Review,SubCourse,AboutCourse
+from .models import Category,Course,Lesson,Review,SubCourse,AboutCourse,Requirement
 from django.utils.translation import gettext_lazy as _
 
 
@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 admin.site.register(Category)
 admin.site.register(AboutCourse)
 admin.site.register(Review)
+admin.site.register(Requirement)
 class CustomLesson(admin.ModelAdmin):
     model=Lesson
     list_display=['course',"title",'subcourse']

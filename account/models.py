@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.apps import apps
 
+
 # Create your models here.
 
 class CustomUserManager(BaseUserManager):
@@ -47,8 +48,11 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     first_name=models.CharField(_("First_name"),max_length=400)
     last_name=models.CharField(_("Last_name"),max_length=400)
     email=models.EmailField(_("Email Address"),unique=True,)
+    phone_no=models.CharField(_("Phone Number"),unique=True,max_length=12,blank=True,null=True)
     is_staff = models.BooleanField(_("staff status"), default=False )
-    is_active = models.BooleanField( _("active"),default=True, )
+    is_active = models.BooleanField( _("active"),default=True,)
+    is_verified = models.BooleanField( _("Verified"),default=False,)
+    is_instrutor=models.BooleanField(_("Instructor"),default=False)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     confirm_password=models.CharField(max_length=100)
 
@@ -76,17 +80,20 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     def save(self,**kwargs):
         self.first_name= self.first_name.title()
         self.last_name= self.last_name.title()
+        if self.is_superuser:
+            self.is_verified=True
+            self.is_instrutor=True
         return super().save(**kwargs)
 
     
 
-class EmailVerification(models.Model):
+class PhoneNumberVerification(models.Model):
     id=models.UUIDField(primary_key=True,editable=False,db_index=True,default=uuid.uuid4)
-    email=models.EmailField(_("Email Address"),unique=True,)
-    otp_code=models.CharField(max_length=6,unique=False)
-    verify=models.BooleanField(default=False)
+    phone_no=models.CharField(_("Phone Number"),unique=False,max_length=12,blank=True,null=True)
+    otp_code=models.CharField(max_length=6,unique=False,blank=True,null=True)
+    # verify=models.BooleanField(default=False)
     date_generated=models.DateTimeField(auto_now=True)
 
 
     def __str__(self) -> str:
-        return self.email
+        return self.phone_no

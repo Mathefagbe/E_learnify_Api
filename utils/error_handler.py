@@ -2,9 +2,13 @@ def error_handler(e):
     msg = ''
     if hasattr(e, 'detail'):
         if isinstance(e.detail, dict):
-            for q in e.detail.items():
-                msg += f"{q[1][0]} "
-                break
+            for q,k in e.detail.items():
+                if k[0].code=="required":
+                    msg += f"{q}: {k[0]}"
+                    break
+                else:
+                    msg += f"{k[0]}"
+                    break
         elif isinstance(e.detail, list):
             for q in e.detail:
                 msg += f"{q} "

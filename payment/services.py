@@ -76,9 +76,7 @@ class WebhookService(object):
             if event == "charge.success":
                 paystack_service = Transactions()
                 paystack_service.log_transaction(body["data"],body["data"]["customer"]["email"])
-
-                customer_service = Transactions()
-                context=customer_service.log_customer(body["data"])
+                context='payment successful'
         return context
 
 

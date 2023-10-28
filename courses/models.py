@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from django.db.models import Avg
 import uuid
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -45,8 +46,8 @@ class Course(models.Model):
         if self.discount is not None:
             newprice=float(self.price)-(float(self.price)*(self.discount* 0.01))
             return newprice
-
-       
+        
+               
     def save(self,) -> None:
         if self.price==None:
             self.price_status=Course.StatusMode.Free
@@ -80,6 +81,7 @@ class Lesson(models.Model):
     
 
     def create_duration_handler(self):
+        # self.video.
         resovled_path=self.video.path.replace(os.sep,os.altsep)
         video = cv2.VideoCapture(resovled_path)
         fps = video.get(cv2.CAP_PROP_FPS)
@@ -93,14 +95,25 @@ class Lesson(models.Model):
         self.create_duration_handler()
         return super().save(force_update=True)
 
-class AboutCourse(models.Model):
-     course=models.ForeignKey(Course,on_delete=models.CASCADE,related_name='about_course',null=True)
-     description=models.TextField(_("Description"),blank=True,null=True)
-     requirement=models.TextField(_("Requirement"),blank=True,null=True)
 
+
+class AboutCourse(models.Model):
+     course=models.OneToOneField(Course,on_delete=models.CASCADE,related_name='about_course',null=True)
+     description=models.TextField(_("Description"),blank=True,null=True)
+ 
 
      def __str__(self) -> str:
          return self.course.title
+     
+
+
+class Requirement(models.Model):
+    about_course=models.ForeignKey(AboutCourse,on_delete=models.CASCADE,related_name='requirements',null=True,db_index=True)
+    requirement=models.CharField(_("requirement"),max_length=100,blank=True,null=True)
+
+    def __str__(self) -> str:
+        return self.requirement
+
 
 
 class Review(models.Model):

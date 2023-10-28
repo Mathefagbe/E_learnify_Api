@@ -27,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -60,7 +61,8 @@ INSTALLED_APPS = [
     'user_profile',
     'my_subscription',
     'payment',
-    'notification'
+    'notification',
+ 
 ]
 
 MIDDLEWARE = [
@@ -73,11 +75,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'utils.middleware.TestMiddleWare',
 ]
 
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING':False,
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+                                    #    'rest_framework.authentication.BasicAuthentication',
         ),
     
 }
@@ -87,7 +92,7 @@ ROOT_URLCONF = 'learnifyApi.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates/"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -152,6 +157,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATICFILES_DIRS= [BASE_DIR / 'static/']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -204,7 +210,7 @@ SIMPLE_JWT = {
 }
 
 if DEBUG:
-    MEDIA_URL="/media/"
+    MEDIA_URL="media/"
     MEDIA_ROOT=os.path.join(BASE_DIR,'media/')
 
 
@@ -299,3 +305,26 @@ FCM_DJANG0_SETTINGS={
     "ONE_DEVICE_PER_USER":False,
     "DELETE_INACTIVE_DEVICES":False
 }
+
+
+DOMIN=config("DEFAULT_DOMIN")
+PROTOCOL=config("PROTOCOL")
+
+
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME':env('CLOUDINARY_CLOUD_NAME'),
+#     'API_KEY':env('CLOUDINARY_API_KEY'),
+#     'API_SECRET':env('CLOUDINARY_API_SECRET')
+# }
+
+
+#    MEDIA_URL="/media/"
+#     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# DATABASES = {
+#             'default': dj_database_url.parse(env('DATABASE_URL'))
+#         }

@@ -1,0 +1,239 @@
+[{
+"model": "courses.course",
+"pk": "a0ea0a33-5525-411c-836c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Riverpod has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5525-231c-836c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Riverpod has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5325-231c-836c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Getx has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-1111-231c-863c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a12-5225-231c-863c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a12-5325-201c-863c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a12-5325-231c-863c-5f27818bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5525-411c-836c-5f28118bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Riverpod has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5525-231c-836c-5f28719bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Riverpod has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5325-231c-836c-3f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Getx has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a33-5325-231c-863c-2f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": "5000",
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a12-5325-231c-963c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a12-5325-231c-063c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+},
+{
+"model": "courses.course",
+"pk": "a0ea0a22-5325-231c-863c-5f28718bacd0",
+"fields": {
+"title": "Introduction to flutter:Using Provider has statemanagement",
+"author": "395e8836-390b-4378-8ee8-06ee43186668",
+"category": 4,
+"image": "Course_img/2023/41/flutterist.jpg",
+"price": null,
+"discount": null,
+"price_status": "Paid",
+"level": "Beginner",
+"date_created": "2023-10-10T09:44:43.974Z",
+"date_updated": "2023-10-10T17:41:07.611Z",
+"subscribers": []
+}
+}
+]

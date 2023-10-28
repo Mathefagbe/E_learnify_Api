@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,EmailVerification
+from .models import CustomUser,PhoneNumberVerification
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
 class CustomAdmin(UserAdmin):
     model=CustomUser
-    list_display=['email','first_name','last_name',"is_staff"]
+    list_display=['email','first_name','last_name',"is_staff",'is_verified']
     ordering=[]
     add_fieldsets = (
         (
@@ -19,13 +19,14 @@ class CustomAdmin(UserAdmin):
     )
     fieldsets = (
         (None, {"fields": ( "password",)}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email",'phone_no')}),
         (
             _("Permissions"),
             {
                 "fields": (
                     "is_active",
                     "is_staff",
+                    'is_verified',
                     "is_superuser",
                     "groups",
                     "user_permissions",
@@ -37,9 +38,9 @@ class CustomAdmin(UserAdmin):
 admin.site.register(CustomUser,CustomAdmin)
 
 class EmailVerifyAdmin(admin.ModelAdmin):
-    model=EmailVerification
-    list_display=["email",'verify']
+    model=PhoneNumberVerification
+    list_display=["phone_no",'otp_code']
     fieldsets = (
-        (None, {"fields": ("email",'verify','otp_code')}),
+        (None, {"fields": ("phone_no",'otp_code')}),
     )
-admin.site.register(EmailVerification,EmailVerifyAdmin)
+admin.site.register(PhoneNumberVerification,EmailVerifyAdmin)

@@ -1,4 +1,4 @@
-from .models import TransactionLog,PayStackCustomer
+from .models import TransactionLog
 from courses.models import Course
 from rest_framework.exceptions import NotFound
 from utils.error_handler import error_handler
@@ -31,27 +31,27 @@ class Transactions(object):
         # course_id=transaction_data['metadata']['course_id']
         return enroll_to_course(course_id,user)
 
-    def _create_customer_object(self,customer_data, authorization_data):
-        user=self._get_user_by_email(email=customer_data["email"])
-        defaults = {
-            "user": user,
-            "email": customer_data["email"],
-            "authorization_code": authorization_data["authorization_code"],
-            "card_type": authorization_data["card_type"],
-            "last4": authorization_data["last4"],
-            "exp_month": authorization_data["exp_month"],
-            "exp_year": authorization_data["exp_year"],
-            "bin": authorization_data["bin"],
-            "bank": authorization_data["bank"],
-            "account_name": authorization_data["account_name"],
-        }
+    # def _create_customer_object(self,customer_data, authorization_data):
+    #     user=self._get_user_by_email(email=customer_data["email"])
+    #     defaults = {
+    #         "user": user,
+    #         "email": customer_data["email"],
+    #         "authorization_code": authorization_data["authorization_code"],
+    #         "card_type": authorization_data["card_type"],
+    #         "last4": authorization_data["last4"],
+    #         "exp_month": authorization_data["exp_month"],
+    #         "exp_year": authorization_data["exp_year"],
+    #         "bin": authorization_data["bin"],
+    #         "bank": authorization_data["bank"],
+    #         "account_name": authorization_data["account_name"],
+    #     }
 
-        PayStackCustomer.objects.update_or_create(**defaults, defaults=defaults)
+        
 
-    def log_customer(self,customer_data) -> None:
-        customer_detail = customer_data["customer"]
-        authorization_data = customer_data["authorization"]
-        self._create_customer_object(customer_detail,authorization_data)
+    # def log_customer(self,customer_data) -> None:
+    #     customer_detail = customer_data["customer"]
+    #     authorization_data = customer_data["authorization"]
+    #     self._create_customer_object(customer_detail,authorization_data)
 
 
     def log_transaction(self, transaction_data,email):
@@ -59,14 +59,3 @@ class Transactions(object):
        return self._create_transaction_object(transaction_data,user)
 
     
-    # @staticmethod
-    # def enroll_to_course(course_id,user):
-    #     try:
-    #         get_course=Course.objects.get(id=course_id)
-    #         get_course.subscribers.add(user)
-    #         context={
-    #             'status':f'congratulations You Have successfully Enrolled For {get_course.title}'
-    #         }
-    #     except Exception as e:
-    #         raise NotFound(error_handler(e))
-    #     return context

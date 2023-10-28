@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from account.services import check_verification,check_isactive
-from .models import CustomUser,EmailVerification
+from .models import CustomUser,PhoneNumberVerification
 from django.utils.crypto import get_random_string
 import string
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
@@ -14,9 +14,13 @@ class UserInputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=CustomUser
-        fields=['id','email','first_name','last_name','password','confirm_password']
+        fields=['id','email','first_name','last_name','phone_no'
+                "is_verified","is_staff",'password','confirm_password']
         extra_kwargs={
             'password':{"write_only":True},
+            "is_verified":{"read_only":True },
+            "is_staff":{"read_only":True },
+            "id":{"read_only":True}
             }
         
     def validate(self, attrs):
@@ -30,18 +34,12 @@ class UserInputSerializer(serializers.ModelSerializer):
         return attrs
       
     def create(self, validated_data):
-        user=CustomUser()
-        user.email=validated_data.get('email',None)
-        user.first_name=validated_data.get('first_name',None)
-        user.last_name=validated_data.get('last_name',None)
+        user=CustomUser.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.confirm_password=user.password
-        # checking if the user has validate before createing an account,
-        # hence validate first before creating account
-        check_verification(user)
         user.save()
         return user
-    
+
 
 class UserOutputSerializer(serializers.ModelSerializer):
     full_name=serializers.CharField(source='get_full_name')
@@ -49,47 +47,32 @@ class UserOutputSerializer(serializers.ModelSerializer):
         model=CustomUser
         fields=['id','full_name','email',]
 
-class EmailBaseInputSerializer(serializers.ModelSerializer):
+class PhoneNumberVerifyInputSerialzer(serializers.ModelSerializer):
     class Meta:
-        model=EmailVerification
-        fields=['email','otp_code','verify']
+        model=PhoneNumberVerification
+        fields=['phone_no','otp_code']
         extra_kwargs={
-            "verify":{"read_only":True},
             "date_created":{"read_only":True} }
 
     def validate(self, attrs):
-        email=attrs.get('email',None)
-        if email is None:
-            raise serializers.ValidationError({"detail":"please enter a valid email address"})
+        phone_no=attrs.get('phone_no',None)
+        if phone_no is None:
+            raise serializers.ValidationError({"detail":"please enter a valid phone Number"})
         return attrs
 
     def create(self, validated_data):
      return super().create(validated_data)
     
-    def update(self, instance, validated_data):
-        instance.email=validated_data.get('email',instance.email)
-        generated_otp=get_random_string(6,allowed_chars=string.digits)
-        instance.otp=validated_data.get('otp_code',generated_otp)
-        instance.verified=validated_data.get("verified",False)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.phone_no=validated_data.get('phone_no',instance.phone_no)
+    #     generated_otp=get_random_string(6,allowed_chars=string.digits)
+    #     instance.otp_code=validated_data.get('otp_code',generated_otp)
+    #     instance.save()
+    #     return instance
 
-class UserEmailVerifyInputSerialzer(EmailBaseInputSerializer):
-    pass
-
-
-class ForgetPasswordEmailVerifyInputSerialzer(EmailBaseInputSerializer):
-     
-    def update(self, instance, validated_data):
-        instance.email=validated_data.get('email',instance.email)
-        generated_otp=get_random_string(6,allowed_chars=string.digits)
-        instance.otp=validated_data.get('otp_code',generated_otp)
-        instance.save()
-        return instance
-    
 
 class ForgetPasswordInputSerializer(serializers.Serializer):
-    email=serializers.EmailField(required=True)
+    phone_no=serializers.CharField(required=True,max_length=12)
     password=serializers.CharField(required=True, write_only=True)
     confirm_password=serializers.CharField(required=True,write_only=True)
 
@@ -102,7 +85,7 @@ class ForgetPasswordInputSerializer(serializers.Serializer):
     def create(self, validated_data):
         try:   
             new_password=validated_data.get('password')
-            user=CustomUser.objects.get(email=validated_data['email'])
+            user=CustomUser.objects.get(phone_no=validated_data['phone_no'])
             user.set_password(new_password)
             user.confirm_password=user.password
             user.save()
@@ -120,11 +103,8 @@ class TokenObtainPairSerializer(TokenObtainSerializer):
         data = super().validate(attrs)
        # check if the user is still is active or not
         check_isactive(self.user)
-
         # check if the user is verified before he can successfully login in
-        check_verification(self.user)
-        print(self.user)
-        
+        check_verification(self.user)     
         refresh = self.get_token(self.user)
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)

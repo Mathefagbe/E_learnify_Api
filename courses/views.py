@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404
-from .serializers import (CourseDetailOutputSerializer,CourseInputSerializer,ReviewSerializer,LessonOutputSerializer,
+from .serializers import (CourseDetailOutputSerializer,ReviewSerializer,LessonOutputSerializer,
                           CategorySerializer,CourseOutputSerializer,SubCourseOutputSerializer,AboutCourseSerializer)
 from rest_framework.generics import (ListAPIView,CreateAPIView,RetrieveAPIView)
 from .models import Course,Review,Category,SubCourse,AboutCourse
@@ -17,12 +17,14 @@ from utils.error_handler import error_handler
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import CourseFilters
+from django.db.models import Avg,Sum
+# from social_django.models
 # Create your views here.
 
 # apps views
 class CoursesApiView(ListAPIView):
     serializer_class=CourseOutputSerializer
-    permission_classes=[AllowAny]
+    permission_classes=[IsAuthenticated]
     authentication_classes=[BasicAuthentication]
     filter_backends=[filters.SearchFilter,DjangoFilterBackend]
     search_fields = ['title','author__first_name','author__last_name']
@@ -30,9 +32,30 @@ class CoursesApiView(ListAPIView):
     
 
     def get_queryset(self):
-        return Course.objects.select_related('author',"category").prefetch_related("lessons","reviews").all()
+        return Course.objects.select_related('author',"category")\
+            .prefetch_related("lessons","reviews",)\
+                .annotate(avg_rating=Avg("reviews__rating"),total_lesson=Sum("lessons__duration")).all()
     
+class PopularCourse(ListAPIView):
+    serializer_class=CourseOutputSerializer
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[BasicAuthentication]
 
+
+    def get_queryset(self):
+        return Course.objects.select_related('author',"category")\
+            .prefetch_related("lessons","reviews",)\
+                .annotate(avg_rating=Avg("reviews__rating"),total_lesson=Sum("lessons__duration")).order_by("-avg_rating").all()
+
+class RecentCourse(ListAPIView):
+    serializer_class=CourseOutputSerializer
+    permission_classes=[IsAuthenticated]
+    authentication_classes=[BasicAuthentication]
+
+    def get_queryset(self):
+        return Course.objects.select_related('author',"category")\
+            .prefetch_related("lessons","reviews",)\
+                .annotate(avg_rating=Avg("reviews__rating"),total_lesson=Sum("lessons__duration")).order_by("-date_created").all()
 
 class CategoryApiView(ListAPIView):
     queryset=Category.objects.all()
@@ -44,13 +67,15 @@ class CategoryApiView(ListAPIView):
 class AboutCourseApiView(RetrieveAPIView):
     serializer_class=AboutCourseSerializer
     permission_classes=[IsAuthenticated]
-    authentication_classes=[JWTAuthentication]
+    authentication_classes=[BasicAuthentication]
     lookup_field='id'
 
 
     def get_queryset(self):
-        return AboutCourse.objects.select_related('course','course__author').\
-            prefetch_related('course__lessons',).all()
+        return AboutCourse.objects.select_related('course','course__author__instructor_profile',
+                                                  'course__author__instructor_profile__instructor').\
+            prefetch_related('course__lessons','requirements')\
+                .annotate(total_duration=Sum("course__lessons__duration")).all()
     
     def get_object(self):
         try:
@@ -72,15 +97,20 @@ class CoursesDetailApiView(APIView):
     lookup_field='id'
 
 
+
     def get(self, request, *args, **kwargs):
         try:
-            obj=Course.objects.select_related('author',"category",).\
-                prefetch_related('lessons','reviews').get(id=self.kwargs[self.lookup_field])
+            obj=Course.objects.select_related('author',"category").\
+                prefetch_related('reviews')\
+                    .annotate(avg_rating=Avg("reviews__rating"))\
+                        .get(id=self.kwargs[self.lookup_field])
+        
             self.check_object_permissions(self.request, obj)
-            if self.request.user.enroll_courses.filter(id__in=[obj.id]).exists():
-                serializer=EnrolledCourseDetailOutputSerializer(obj,many=False)
+            if self.request.user.enroll_courses.filter(id__in=[obj.id])\
+                .prefetch_related("course__author__enroll_courses").exists():
+                serializer=EnrolledCourseDetailOutputSerializer(obj,many=False,context={"request":self.request})
             else:
-               serializer=CourseDetailOutputSerializer(obj,many=False)
+               serializer=CourseDetailOutputSerializer(obj,many=False,context={'request':self.request})
         except Exception as e:
             data={
                 "message":error_handler(e),
@@ -137,13 +167,14 @@ class SubCourseApiView(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            obj=SubCourse.objects.select_related('course','course__author',).\
-                prefetch_related('subcourse_lesson',).get(course__id=self.kwargs[self.lookup_field])
+            obj=SubCourse.objects.select_related('course',).\
+                prefetch_related('subcourse_lesson').filter(course=self.kwargs[self.lookup_field])
             self.check_object_permissions(self.request, obj)
-            if self.request.user.enroll_courses.filter(id__in=[obj.course.id]).exists():
-                serializer=EnrollSubCourseOutputSerializer(obj,many=False)
+            if self.request.user.enroll_courses\
+                .prefetch_related("course__author__enroll_courses").filter(id__in=[self.kwargs[self.lookup_field]]).exists():
+                serializer=EnrollSubCourseOutputSerializer(obj,many=True,context={"request":self.request})
             else:
-               serializer=SubCourseOutputSerializer(obj,many=False)
+               serializer=SubCourseOutputSerializer(obj,many=True,context={"request":self.request})
         except Exception as e:
             data={
                 "message":error_handler(e),
@@ -153,31 +184,3 @@ class SubCourseApiView(APIView):
         return Response(serializer.data)
     
 
-# class CreateLessonApiView(CreateAPIView):
-#     serializer_class=LessonOutputSerializer
-#     permission_classes=[IsAuthenticated]
-#     authentication_classes=[JWTAuthentication]
-#     lookup_field='id'
-
-#     @transaction.atomic
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         course=get_object_or_404(Course,id=self.kwargs[self.lookup_field])
-#         serializer.save(user=self.request.user,course=course)
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-# apps views
-# class CreateCoursesApiView(CreateAPIView):
-#     serializer_class=CourseInputSerializer
-#     permission_classes=[IsAuthenticated]
-#     authentication_classes=[JWTAuthentication]
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save(author=self.request.user)
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
